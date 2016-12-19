@@ -1,0 +1,46 @@
+git clone git@github.com:trmwzm/yorick.git
+cd yorick
+git checkout -t origin/f90-plugin
+
+# -- setup config macro 
+export  FORTRAN_LINKAGE=-Df_linkage
+export CFLAGS='-funroll-loops -march=native -mfpmath=sse -fomit-frame-pointer'
+export CC=gcc
+export FC=gfortran
+
+# -- config
+make config
+
+# -- COPT_DEFAULT=-O3
+sed -e 's/COPT_DEFAULT=-O.*/COPT_DEFAULT=-O3/' Make.cfg > tmp
+mv -f tmp Make.cfg
+
+# -- build
+make -j 8
+
+# -- install
+make install
+
+# -- test f90 ----------------------------------
+cd extendf
+../relocate/bin/yorick -batch make.i
+
+add fortran to rules at END of Makefile:
+LD_DLL=$(FC) $(LDFLAGS) $(PLUG_SHARED)
+
+# -- install
+make install
+
+../relocate/bin/yorick
+#include "ferfc.i"
+ferfc(1.)-1.572992168221015e-01;
+
+ferfc.f90:-----
+c_erfc(y,x,n) bind(c,name="ferfc")
+
+ferfc.i:----
+extern raw_ferfc;
+/* PROTOTYPE FORTRAN
+   void ferfc(double array y, double array x, int array n)
+ */
+

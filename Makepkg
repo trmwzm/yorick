@@ -129,6 +129,15 @@ SYS_LIBS=$(X11LIB) $(FPELIB) $(MATHLIB) $(PLUG_LIB)
 GCCOPTS=-g -O2 -ansi -pedantic -Wall $(GCCPROTO)
 GCCPROTO=-Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations
 
+# fortran specific
+FFLAGS= $(Y_FFLAGS) $(CFLAGS)
+%.o: %.f90
+	$(FC) -c $(FFLAGS) $<
+%.o: %.F90
+	$(FC) -c $(FFLAGS) $<
+%.o: %.f03
+	$(FC) -c $(FFLAGS) $<
+
 #------------------------------------------------------------------------
 # standard targets
 # macros in target names or dependency lists must be defined above here
